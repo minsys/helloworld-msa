@@ -1,7 +1,7 @@
 minishift delete --force --clear-cache
 minishift profile set msa-tutorial
-minishift config set memory 10GB
-minishift config set cpus 3
+minishift config set memory 12GB
+minishift config set cpus 4
 minishift config set image-caching true
 minishift config set openshift-version v3.11.0
 minishift addons enable anyuid
@@ -13,8 +13,8 @@ oc login %ip%:8443 -u developer -p developer
 oc new-project helloworld-msa
 git clone https://github.com/minsys/hola
 cd hola/
-# Remove env setting from keycloack.json and hardcode ip OR fix to pickup env
-# Optionally convert to MicroProfile Config instead of Deltaspike
+REM Remove env setting from keycloack.json and hardcode ip OR fix to pickup env
+REM Optionally convert to MicroProfile Config instead of Deltaspike
 oc new-build --binary --name=hola -l app=hola
 mvn package
 oc start-build hola --from-dir=. --follow
@@ -79,7 +79,7 @@ oc expose service hystrix-dashboard --port=8080
 oc policy add-role-to-user admin system:serviceaccount:helloworld-msa:turbine
 oc set env dc/frontend ENABLE_HYSTRIX=true
 oc process -f https://raw.githubusercontent.com/jaegertracing/jaeger-openshift/0.1.2/all-in-one/jaeger-all-in-one-template.yml | oc create -f -
-oc set env dc -l app JAEGER_SERVER_HOSTNAME=jaeger-all-in-one  # redeploy all services with tracing
+oc set env dc -l app JAEGER_SERVER_HOSTNAME=jaeger-all-in-one
 oc set env dc/frontend ENABLE_JAEGER=true
 oc new-project sso
 cd ..
@@ -94,7 +94,7 @@ oc set env dc/keycloak OS_SUBDOMAIN=app.%ip%.nip.io
 oc project helloworld-msa
 oc set env dc KEYCLOAK_AUTH_SERVER_URL=http://keycloak-sso.%ip%.nip.io/auth -l app
 oc set env dc/frontend ENABLE_SSO=true
-# Set Valid Redirect URIs to * in Keycloak admin portal. 
+REM Set Valid Redirect URIs to * in Keycloak admin portal.
 cd ..
 git clone https://github.com/redhat-helloworld-msa/api-management
 cd api-management/
@@ -120,7 +120,7 @@ oc login -u developer -p developer
 oc new-project ci
 oc create -f https://raw.githubusercontent.com/redhat-helloworld-msa/aloha/master/pipeline.yml
 oc project helloworld-msa
-#Change aloha source code
+REM Change aloha source code
 mvn clean package
 oc start-build aloha --from-dir=. --follow
 minishift console
